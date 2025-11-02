@@ -10,8 +10,8 @@ import logging, socket
 import webbrowser
 
 
-app = Flask(__name__, static_folder='static') # Create flask app
-socketio = SocketIO(app) # Use websocket
+app = Flask(__name__, static_folder='static', template_folder='templates') # Create flask app
+socketio = SocketIO(app, async_mode='eventlet') # Use websocket
 game, game_state = None, None # Global variable to represent a game and a gamestate
 
 
@@ -294,16 +294,7 @@ if __name__ == '__main__':
     disable_verbose()
     decorate_events()
     create_new_game()
-    for port in [31415, 8000, 5555, 5000]: # Determining an open port
-        if is_port_open(port):
-            open_port = port
-            break
-    else:
-        raise Exception("Ports 8000, 5555, and 5000 are all occupied")
-    display_messages(open_port)
-    webbrowser.open("http://localhost:" + str(open_port), new=0, autoraise=True)
-    sys.tracebacklimit = 1
-    socketio.run(app, debug=False, port=open_port)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
 
 
 
