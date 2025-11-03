@@ -167,8 +167,13 @@ def create_game_state():
     parser.add_argument('-d', type=str, metavar='DIFFICULTY', help='sets difficulty of game (test/easy/normal/hard/extra-hard)')
     parser.add_argument('-w', '--water', action='store_true', help='loads a full layout with water')
     parser.add_argument('--food', type=int, help='number of food to start with when testing', default=2)
-    args = parser.parse_args()
+    import os
 
+    # If running under a web server (Gunicorn/Render), don't parse CLI args
+    if os.environ.get("RENDER", "") or os.environ.get("DYNO", "") or os.environ.get("GUNICORN_CMD_ARGS", ""):
+        args = parser.parse_args([])   # use all defaults, no CLI
+    else:
+        args = parser.parse_args()
     if args.d in ['t', 'test']:
         assault_plan = make_test_assault_plan(ants)
         num_tunnels = 1
