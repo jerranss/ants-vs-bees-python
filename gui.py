@@ -51,21 +51,29 @@ def index():
 
 @app.route('/initialize_game', methods=['POST'])
 def initialize_game():
-    "Called by the front end when it's time to start a game."
-    next(game) # Advance the game
+    global game_state, game
+    # Make sure a game exists and is at the first yield
+    try:
+        if game is None:
+            create_new_game()
+        next(game)  # advance to first yield after hive spawns
+    except (StopIteration, NameError):
+        # If generator ended or wasn’t created, start fresh
+        create_new_game()
+        next(game)
 
     game_data = {
         'dimensions_x': game_state.dimensions[0],
         'dimensions_y': game_state.dimensions[1],
-        'ant_types': [str(ant) for ant in game_state.ant_types],
+        # just send the names; the front-end reads names anyway
+        'ant_types': list(game_state.ant_types.keys()),
     }
 
-    wet_places = [place for place in game_state.places.values() if type(place) is Water]
-
-    # Parse the names of places to figure out where they are.
-    game_data['wet_places'] = [[int(place.name.split('_')[1]), int(place.name.split('_')[2])] for place in wet_places]
-
-    return jsonify(game_data) # Send game_data back to frontend
+    wet_places = [p for p in game_state.places.values() if type(p) is Water]
+    game_data['wet_places'] = [
+        [int(p.name.split('_')[1]), int(p.name.split('_')[2])] for p in wet_places
+    ]
+    return jsonify(game_data)
 
 
 @app.route('/deploy_ants', methods=['POST'])

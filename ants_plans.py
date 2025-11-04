@@ -9,7 +9,7 @@ def make_test_assault_plan(ants_impl=None):
 
 
 def make_easy_assault_plan(ants_impl=None):
-    ants_impl = ants_impl or ants_impl
+    ants_impl = ants_impl or ants
     plan = AssaultPlan()
     for time in range(3, 16, 2):
         plan.add_wave(ants_impl.Bee, 3, time, 1) # Adding 1 bee of health 3 at timestamp TIME
