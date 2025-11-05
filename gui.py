@@ -11,7 +11,7 @@ import webbrowser
 
 
 app = Flask(__name__, static_folder='static', template_folder='templates') # Create flask app
-socketio = SocketIO(app, async_mode='eventlet') # Use websocket
+socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*") # Use websocket
 game, game_state = None, None # Global variable to represent a game and a gamestate
 
 
@@ -296,6 +296,17 @@ def is_port_open(port):
         except OSError:
             print(f'*** Can not access port {port} ***')
             return False
+
+def _init_server_once():
+    """Ensure logging and event decorations are applied under Gunicorn/Render."""
+    if getattr(_init_server_once, "done", False):
+        return
+    disable_verbose()
+    decorate_events()
+    _init_server_once.done = True
+
+# Call it on import so Gunicorn workers get the decorations.
+_init_server_once()
 
 
 if __name__ == '__main__':
