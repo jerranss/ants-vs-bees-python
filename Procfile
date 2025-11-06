@@ -1,2 +1,3 @@
-web: gunicorn -k eventlet -w 1 gui:app
+web: gunicorn -k eventlet -w 1 -t 120 gui:app
+
 
