@@ -171,7 +171,7 @@ def create_game_state():
 
     # If running under a web server (Gunicorn/Render), don't parse CLI args
     if os.environ.get("RENDER", "") or os.environ.get("DYNO", "") or os.environ.get("GUNICORN_CMD_ARGS", ""):
-        args = parser.parse_args([])   # use all defaults, no CLI
+        args, _ = parser.parse_known_args([])   # use all defaults, no CLI
     else:
         args = parser.parse_args()
     if args.d in ['t', 'test']:

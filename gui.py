@@ -1,3 +1,7 @@
+import eventlet
+eventlet.monkey_patch()
+
+
 import sys
 sys.path.append('libs') # Include files in the "libs" folder
 
