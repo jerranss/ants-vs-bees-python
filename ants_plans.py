@@ -168,12 +168,14 @@ def create_game_state():
     parser.add_argument('-w', '--water', action='store_true', help='loads a full layout with water')
     parser.add_argument('--food', type=int, help='number of food to start with when testing', default=2)
     import os
-
-    # If running under a web server (Gunicorn/Render), don't parse CLI args
-    if os.environ.get("RENDER", "") or os.environ.get("DYNO", "") or os.environ.get("GUNICORN_CMD_ARGS", ""):
-        args, _ = parser.parse_known_args([])   # use all defaults, no CLI
+# Always ignore CLI arguments when running under a web server
+    import sys
+    if "gunicorn" in " ".join(sys.argv):
+        args, _ = parser.parse_known_args([])   # ignore all Gunicorn flags
     else:
         args = parser.parse_args()
+
+    
     if args.d in ['t', 'test']:
         assault_plan = make_test_assault_plan(ants)
         num_tunnels = 1
